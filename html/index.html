@@ -1,0 +1,179 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Music player</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+  integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+  crossorigin="anonymous" />
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/index.css">
+
+<div class="player">
+  <!-- Dashboard -->
+  <div class="dashboard">
+    <!-- Header -->
+    <header>
+      <h4>Now playing:</h4>
+      <h2>String 57th & 9th</h2>
+    </header>
+
+    <!-- CD -->
+    <div class="cd">
+      <div class="cd-thumb" style="background-image: url('https://i.ytimg.com/vi/jTLhQf5KJSc/maxresdefault.jpg')">
+      </div>
+    </div>
+
+    <!-- Control -->
+    <div class="control">
+      <div class="btn btn-repeat">
+        <i class="fas fa-redo"></i>
+      </div>
+      <div class="btn btn-prev">
+        <i class="fas fa-step-backward"></i>
+      </div>
+      <div class="btn btn-toggle-play">
+        <i class="fas fa-pause icon-pause"></i>
+        <i class="fas fa-play icon-play"></i>
+      </div>
+      <div class="btn btn-next">
+        <i class="fas fa-step-forward"></i>
+      </div>
+      <div class="btn btn-random">
+        <i class="fas fa-random"></i>
+      </div>
+    </div>
+
+    <input id="progress" class="progress" type="range" value="0" step="1" min="0" max="100">
+
+    <audio id="audio" src=""></audio>
+  </div>
+
+  <!-- Playlist -->
+  <div class="playlist">
+
+
+  </div>
+</div>
+
+<script>
+  
+  const $ = document.querySelector.bind(document)
+  const $$ = document.querySelectorAll.bind(document)
+  const player = $('.player')
+  const cd = $('.cd')
+  const header = $('header h2')
+  const cdThym = $('.cd-thumb')
+  const audio = $('#audio')
+  const btnPlay = $('.btn-toggle-play')
+
+  const app = {
+    currentIndex: 0,
+    songs: [{
+      name: 'Cưới Thôi',
+      singer: 'datka',
+      path: '../music/song1.mp3',
+      image: '../img/image1.jpg'
+
+    }, {
+      name: 'Rồi Tới Luôn',
+      singer: 'ChiDan',
+      path: './music/song2.mp3',
+      image: '../img/image2.jpg'
+    }, {
+      name: 'Covid đi nhanh đi',
+      singer: 'ChiDan',
+      path: './music/song3.mp3',
+      image: '../img/image3.jpg'
+    }, {
+      name: 'Covid đi nhanh đi',
+      singer: 'ChiDan',
+      path: './music/song4.mp3',
+      image: '../img/image4.jpg'
+    }
+      , {
+      name: 'Covid đi nhanh đi',
+      singer: 'ChiDan',
+      path: './music/song5.mp3',
+      image: '../img/image5.jpg'
+    }
+      , {
+      name: 'Covid đi nhanh đi',
+      singer: 'ChiDan',
+      path: './music/song6.mp3',
+      image: '../img/image6.jpg'
+    }
+      , {
+      name: 'Covid đi nhanh đi',
+      singer: 'ChiDan',
+      path: './music/song7.mp3',
+      image: '../img/image7.jpg'
+    }
+
+    ],
+    render: function () {
+      const htmls = this.songs.map(song => {
+        return `
+        <div class="song">
+      <div class="thumb" style="background-image: url('${song.image}')">
+        
+      </div>
+      <div class="body">
+        <h3 class="title">${song.name}</h3>
+        <p class="author">${song.singer}</p>
+      </div>
+      <div class="option">
+        <i class="fas fa-ellipsis-h"></i>
+      </div>
+    </div>
+        `
+      })
+      $('.playlist').innerHTML = htmls.join('\n')
+    },
+    defineProperties: function () {
+      Object.defineProperty(this, 'currentSong', {
+        get: function () {
+          return this.songs[this.currentIndex]
+        }
+      })
+    }
+    ,
+    handlerEvents: function () {
+      const cdWidth = cd.offsetWidth
+      // xử lý hình CD ẩn/hiện
+      document.onscroll = function () {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop
+        const newWidth = cdWidth - scrollTop;
+        cd.style.width = newWidth > 0 ? newWidth + 'px' : 0;
+        cd.style.opacity = newWidth / cdWidth
+
+      }
+      // xử lý khi click player
+      btnPlay.onclick = function () {
+        audio.play();
+        player.classList.add('playing')
+        // audio.pause();
+      }
+    }
+    ,
+    // xử lý điểu chỉnh tên bài hát
+    loadCurrentSong: function () {
+      header.textContent = this.currentSong.name
+      cdThym.style.backgroundImage = `url('${this.currentSong.image}')`
+      audio.src = this.currentSong.path
+      console.log(header, cdThym, audio)
+
+    },
+    start: function () {
+      //  định nghĩa một thuộc tính
+      this.defineProperties()
+      // xử lý ẩn hiện ảnh 
+      this.handlerEvents()
+      // xử lý điều chỉnh bài hát hiện tại đang phát
+      this.loadCurrentSong()
+      // hiển thị danh sách bài hát
+      this.render()
+    }
+
+  }
+  app.start()
+
+</script>
