@@ -1,12 +1,17 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Music player</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
-  integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
-  crossorigin="anonymous" />
-<link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/index.css">
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music player</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+    integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+    crossorigin="anonymous" />
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/index.css">
+</head>
 <div class="player">
   <!-- Dashboard -->
   <div class="dashboard">
@@ -44,7 +49,7 @@
 
     <input id="progress" class="progress" type="range" value="0" step="1" min="0" max="100">
 
-    <audio id="audio" src=""></audio>
+    <audio id="audio" src="" autoplay></audio>
   </div>
 
   <!-- Playlist -->
@@ -54,8 +59,9 @@
   </div>
 </div>
 
+</html>
 <script>
-  
+
   const $ = document.querySelector.bind(document)
   const $$ = document.querySelectorAll.bind(document)
   const player = $('.player')
@@ -64,9 +70,10 @@
   const cdThym = $('.cd-thumb')
   const audio = $('#audio')
   const btnPlay = $('.btn-toggle-play')
-
+  const progress = $('#progress')
   const app = {
     currentIndex: 0,
+    isPlaying: false,
     songs: [{
       name: 'Cưới Thôi',
       singer: 'datka',
@@ -138,6 +145,7 @@
     ,
     handlerEvents: function () {
       const cdWidth = cd.offsetWidth
+      const _this = this
       // xử lý hình CD ẩn/hiện
       document.onscroll = function () {
         const scrollTop = window.scrollY || document.documentElement.scrollTop
@@ -148,10 +156,37 @@
       }
       // xử lý khi click player
       btnPlay.onclick = function () {
-        audio.play();
-        player.classList.add('playing')
-        // audio.pause();
+        if (_this.isPlaying) {
+          audio.pause();
+        } else {
+          audio.play();
+        }
+
       }
+      // xử lý khi song play
+      audio.onplay = function () {
+        _this.isPlaying = true
+        player.classList.add('playing')
+      }
+      // xử lý khi song pause
+      audio.onpause = function () {
+        _this.isPlaying = false
+        player.classList.remove('playing')
+      }
+      // xử lý tiến độ chạy range
+      audio.ontimeupdate = function () {
+        if (audio.duration) {
+          const progressCurrent = Math.floor(audio.currentTime / audio.duration * 100)
+          progress.value = progressCurrent
+        }
+      }
+      // xử lý tiến độ khi tua song
+      progress.onchange = function () {
+        const seekTime = audio.duration / 100* progress.value  
+        audio.currentTime = seekTime
+      }
+
+
     }
     ,
     // xử lý điểu chỉnh tên bài hát
